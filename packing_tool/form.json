@@ -1,0 +1,5 @@
+{
+    "game_uuid":"zombie_game",
+    //"game_uuid":"1234-123-123-12345678"
+    "resources"://base64, .zip
+}

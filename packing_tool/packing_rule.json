@@ -1,0 +1,31 @@
+{
+  "version": "2.0.0",
+  "description": "文件分类规则，用于区分游戏、MOD和编辑器资产",
+  "rules": {
+    "game": {
+      "description": "游戏核心文件（运行时必需）",
+      "patterns": [
+        "^index\\.html$",
+        "^Build/.*$",
+        "^GameContainerData/.*$"
+      ]
+    },
+    "mod": {
+      "description": "MOD扩展文件（由用户通过编辑器生成）",
+      "patterns": [
+        "^mod/.*$"
+      ]
+    },
+    "editor": {
+      "description": "编辑器相关文件",
+      "patterns": [
+        "^editor\\.html$",
+        "^editorResource/.*$"
+      ]
+    },
+    "customizable_elements_config":{
+      "description": "可指定资产config的路径",
+      "patterns":["^customizable_element_config\\.json$"]
+    }
+  }
+} 

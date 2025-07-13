@@ -1,0 +1,31 @@
+{
+  "apiKey": "sk-405d0fa422b24efd82ae73241f4ec7d5",
+  "apiUrl": "https://api.deepseek.com",
+  "model": "deepseek-chat",
+  "apiSettings": {
+    "temperature": 0.7,
+    "maxTokens": 2000,
+    "systemMessage": "You are a JSON data generator. Return only valid JSON without any explanations, markdown formatting, or additional text. Start your response directly with { and end with }."
+  },
+  "schemaConstraints": {
+    "timestamp": {
+      "minimum": 0,
+      "maximum": 180,
+      "description": "敌人生成的时间戳（秒），范围0-180秒（3分钟）"
+    },
+    "spawnPosIndex": {
+      "minimum": 0,
+      "maximum": 1,
+      "description": "生成位置索引，只能是0或1"
+    },
+    "enemyType": {
+      "minimum": 0,
+      "maximum": 3,
+      "description": "敌人类型，0-3对应enemy0-enemy3"
+    },
+    "spawnEvents": {
+      "minItems": 1,
+      "description": "敌人生成事件列表，至少包含1个事件"
+    }
+  }
+}

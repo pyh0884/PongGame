@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>游戏编辑器</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 引入JSZip库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <!-- 引入AJV验证库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ajv/8.17.1/ajv7.min.js"></script>
+    <!-- 引入必要的模块 -->
+    <script src="editorResource/enemy_spawn_validator.js"></script>
+    <script src="editorResource/deepseek_json_generator.js"></script>
+    <script src="editorResource/packing_rule_manager.js"></script>
+    <script src="editorResource/localStorage_manager.js"></script>
+    <script src="editorResource/ai_integration.js"></script>
+    <script src="editorResource/editor_main.js"></script>
+    <script src="editorResource/game_test_manager.js"></script>
+    <!-- 引入样式文件 -->
+    <link rel="stylesheet" href="editorResource/editor_styles.css">
+</head>
+<body>
+    <div class="container">
+        <h2>游戏编辑器</h2>
+        
+        <div class="status-display">
+            <span id="gameStatus" class="status-draft">状态: 草稿</span>
+        </div>
+        
+        <!-- 基本信息 -->
+        <div class="section">
+            <h3>基本信息</h3>
+            <div class="form-group">
+                <label class="form-label">游戏名称</label>
+                <input type="text" id="gameTitle" class="form-input" placeholder="输入游戏名称" value="我的射击游戏">
+            </div>
+            <div class="form-group">
+                <label class="form-label">游戏描述</label>
+                <textarea id="gameDescription" class="form-input form-textarea" placeholder="输入游戏描述">一款刺激的射击游戏，击败所有敌人！</textarea>
+            </div>
+        </div>
+        
+        <!-- AI 生成敌人数据 -->
+        <div class="section">
+            <h3>AI 生成敌人数据</h3>
+            <div class="ai-json-container">
+                <div class="ai-input-panel">
+                    <div class="ai-panel-title">📝 描述你的游戏</div>
+                    <textarea id="aiGameDescription" class="ai-textarea" placeholder="请描述你想要的游戏玩法，例如：&#10;- 游戏难度（简单/普通/困难）&#10;- 游戏时长（30秒/60秒/90秒）&#10;- 敌人出现方式（密集/稀疏/逐渐增加）&#10;- 特殊要求等...&#10;&#10;示例：我想要一个60秒的射击游戏，难度适中，敌人逐渐增多，最后30秒比较激烈">我想要一个60秒的射击游戏，难度适中，敌人逐渐增多，最后30秒比较激烈</textarea>
+                    <button class="ai-generate-btn" id="generateAIBtn" onclick="generateEnemyDataWithAI()">🤖 AI 生成数据</button>
+                    <div id="aiStatus" class="ai-status hidden"></div>
+                </div>
+                
+                <div class="ai-output-panel">
+                    <div class="ai-panel-title">⚡ 生成的 JSON 数据</div>
+                    <textarea id="jsonPreview" class="ai-textarea json-preview" readonly placeholder="AI 生成的敌人数据将显示在这里..."></textarea>
+                    <button class="upload-btn" id="useAIDataBtn" onclick="useGeneratedData()" style="background: #6bb6ff; margin-top: 8px;" disabled>✓ 使用此数据</button>
+                </div>
+            </div>
+            <div class="tip">
+                AI 将根据你的描述生成符合游戏规则的敌人生成数据。生成后可以预览并选择使用。
+            </div>
+        </div>
+        
+        <!-- 敌人头像 -->
+        <div class="section">
+            <h3>敌人头像</h3>
+            <div class="enemy-avatars-grid">
+                <div class="enemy-avatar-item">
+                    <div id="enemyPreview0" class="enemy-preview empty" onclick="selectEnemyFile(0)">
+                        点击上传<br>敌人0
+                    </div>
+                    <button class="upload-btn" onclick="selectEnemyFile(0)">选择文件</button>
+                </div>
+                <div class="enemy-avatar-item">
+                    <div id="enemyPreview1" class="enemy-preview empty" onclick="selectEnemyFile(1)">
+                        点击上传<br>敌人1
+                    </div>
+                    <button class="upload-btn" onclick="selectEnemyFile(1)">选择文件</button>
+                </div>
+                <div class="enemy-avatar-item">
+                    <div id="enemyPreview2" class="enemy-preview empty" onclick="selectEnemyFile(2)">
+                        点击上传<br>敌人2
+                    </div>
+                    <button class="upload-btn" onclick="selectEnemyFile(2)">选择文件</button>
+                </div>
+                <div class="enemy-avatar-item">
+                    <div id="enemyPreview3" class="enemy-preview empty" onclick="selectEnemyFile(3)">
+                        点击上传<br>敌人3
+                    </div>
+                    <button class="upload-btn" onclick="selectEnemyFile(3)">选择文件</button>
+                </div>
+            </div>
+            <!-- 隐藏的文件输入框 -->
+            <input type="file" id="enemyFileInput0" class="hidden" accept="image/*" onchange="handleEnemyFileChange(0)">
+            <input type="file" id="enemyFileInput1" class="hidden" accept="image/*" onchange="handleEnemyFileChange(1)">
+            <input type="file" id="enemyFileInput2" class="hidden" accept="image/*" onchange="handleEnemyFileChange(2)">
+            <input type="file" id="enemyFileInput3" class="hidden" accept="image/*" onchange="handleEnemyFileChange(3)">
+        </div>
+        
+        <!-- 背景音乐 -->
+        <div class="section">
+            <h3>背景音乐</h3>
+            <div class="audio-section">
+                <div id="audioPreview" class="audio-preview empty" onclick="selectAudioFile()">
+                    点击上传背景音乐 (MP3)
+                </div>
+                <button class="upload-btn" onclick="selectAudioFile()">选择音频文件</button>
+                <input type="file" id="audioFileInput" class="hidden" accept="audio/*" onchange="handleAudioFileChange()">
+            </div>
+        </div>
+        
+        <!-- 操作按钮 -->
+        <div class="button-group">
+            <button class="export-btn" id="exportBtn" onclick="exportLocalEdit()">导出配置</button>
+            <button class="export-btn publish-btn" id="publishBtn" onclick="publishLocalEdit()">发布同款</button>
+        </div>
+        
+        <div class="tip">
+            <strong>导出配置</strong>：下载包含你编辑内容的 MOD 文件包（包括敌人数据、头像、音频等）<br>
+            <strong>发布同款</strong>：将你的作品发布到网站，供其他用户游玩和下载
+        </div>
+    </div>
+
+    <script>
+        /* ========================================================================
+         * 后端接口函数 - 由同事负责维护
+         * ========================================================================
+         * 以下两个函数是与网站后端对齐的核心接口函数，请勿随意修改函数名和返回格式
+         * 如需修改内部实现，请联系后端同事确认接口协议
+         */
+
+        /**
+         * 获取 MOD 数据包（仅包含 mod/ 目录）
+         * 
+         * 【核心接口函数 - 后端发布用】
+         * 
+         * 功能说明：
+         * 1. 收集用户编辑的 MOD 内容（敌人数据、头像、音频等）
+         * 2. 只打包 mod/ 目录，不包含游戏本体文件
+         * 3. 用于发布到后端服务器
+         * 
+         * ZIP包内部结构：
+         * mod/
+         *   ├── enemy_spawn_data.json  // AI生成或默认的敌人生成数据
+         *   ├── texture/
+         *   │   ├── enemy0.png         // 敌人头像（转换为PNG格式）
+         *   │   ├── enemy1.png
+         *   │   ├── enemy2.png
+         *   │   └── enemy3.png
+         *   └── audio/
+         *       └── bgm.mp3            // 背景音乐
+         */
+        async function getLocalEditData() {
+            // 更新游戏数据（从表单获取最新输入）
+            window.gameData.title = document.getElementById('gameTitle').value;
+            window.gameData.description = document.getElementById('gameDescription').value;
+            
+            // 创建ZIP包 - 只包含 mod 目录
+            const zip = new JSZip();
+            const modFolder = zip.folder("mod");
+            const textureFolder = modFolder.folder("texture");
+            const audioFolder = modFolder.folder("audio");
+            
+            // 获取敌人生成数据（优先使用AI生成的数据）
+            let enemySpawnData = window.gameData.enemySpawnData;
+            if (enemySpawnData) {
+                modFolder.file("enemy_spawn_data.json", JSON.stringify(enemySpawnData, null, 2));
+            }
+            // 添加敌人头像到texture文件夹（转换为PNG格式）
+            for (let i = 0; i < 4; i++) {
+                const file = window.gameData.enemyFiles[i];
+                if (file) {
+                    const pngBlob = await convertImageToPng(file);
+                    textureFolder.file(`enemy${i}.png`, pngBlob);
+                }
+            }
+            
+            // 添加背景音乐
+            if (window.gameData.audioFile) {
+                audioFolder.file("bgm.mp3", window.gameData.audioFile);
+            }
+            
+            // 生成ZIP文件
+            const zipBlob = await zip.generateAsync({type: "blob"});
+            
+            return {
+                title: window.gameData.title,
+                description: window.gameData.description,
+                zipBlob: zipBlob,
+            };
+        }
+
+        /**
+         * 获取完整游戏数据包（包含游戏文件 + mod/ 目录）
+         * 
+         * 【用户导出下载用】
+         * 
+         * 功能说明：
+         * 1. 等待 packing_rule.json 加载完成
+         * 2. 根据规则识别游戏本体文件
+         * 3. 使用 fetch 获取游戏文件
+         * 4. 添加用户编辑的 MOD 内容
+         * 5. 打包为完整可玩的游戏包
+         * 
+         * ZIP包内部结构：
+         * ├── index.html              // 游戏入口文件
+         * ├── Build/                  // 游戏引擎文件
+         * ├── GameContainerData/      // 游戏容器数据
+         * └── mod/                    // 用户MOD内容
+         *     ├── enemy_spawn_data.json
+         *     ├── texture/
+         *     └── audio/
+         */
+        async function getCompleteGameData() {
+            try {
+                // 1. 等待打包规则加载完成
+                await packingRuleManager.waitForRulesLoaded();
+                
+                // 2. 获取 MOD 数据
+                const modData = await getLocalEditData();
+                
+                // 3. 创建新的ZIP包，包含完整游戏
+                const zip = new JSZip();
+                
+                // 4. 获取打包规则信息
+                const rulesInfo = packingRuleManager.getRulesInfo();
+                const gamePatterns = packingRuleManager.getGameFilePatterns();
+                
+                // 5. 获取所有需要的游戏文件
+                const gameFiles = await fetchGameFiles(gamePatterns);
+                
+                // 6. 将游戏文件添加到ZIP包中
+                for (const gameFile of gameFiles) {
+                    zip.file(gameFile.path, gameFile.content);
+                }
+                
+                // 7. 添加 packing_rule.json 供参考
+                zip.file("packing_rule.json", JSON.stringify(packingRuleManager.rules, null, 2));
+                
+                // 8. 解压并添加 MOD 数据
+                const modZip = await JSZip.loadAsync(modData.zipBlob);
+                for (const [relativePath, zipEntry] of Object.entries(modZip.files)) {
+                    if (!zipEntry.dir) {
+                        const content = await zipEntry.async('blob');
+                        zip.file(relativePath, content);
+                    }
+                }
+                
+                // 9. 创建说明文件
+                const instructionText = `完整游戏包使用说明：
+
+=== 游戏信息 ===
+游戏标题：${modData.title}
+游戏描述：${modData.description}
+创建时间：${new Date().toLocaleString()}
+打包规则版本：${rulesInfo.version}
+
+=== 使用说明 ===
+1. 本ZIP包含完整的游戏文件和你编辑的MOD内容
+2. 解压后双击 index.html 即可开始游戏
+3. 所有文件都已包含，无需额外操作
+
+=== 包含的游戏文件 ===
+${gameFiles.map(file => `   - ${file.path}`).join('\n')}
+
+=== 目录结构 ===
+游戏目录/
+├── index.html
+├── Build/
+├── GameContainerData/
+├── packing_rule.json
+└── mod/ (你的MOD内容)
+    ├── enemy_spawn_data.json
+    ├── texture/
+    └── audio/
+
+=== 技术信息 ===
+打包规则: ${rulesInfo.description}
+支持的文件类型: ${rulesInfo.ruleTypes.join(', ')}
+包含游戏文件数量: ${gameFiles.length}`;
+
+                zip.file("README.txt", instructionText);
+                
+                // 10. 生成完整ZIP文件
+                const completeZipBlob = await zip.generateAsync({type: "blob"});
+                
+                return {
+                    title: modData.title,
+                    description: modData.description,
+                    zipBlob: completeZipBlob,
+                };
+                
+            } catch (error) {
+                console.error('创建完整游戏包失败:', error);
+                
+                // 出错时返回基础的 MOD 包，并附加错误说明
+                const modData = await getLocalEditData();
+                const zip = new JSZip();
+                
+                const errorText = `导出出现问题
+
+错误信息：${error.message}
+
+这个包目前只包含 MOD 内容，请手动添加游戏文件：
+1. 将 mod/ 文件夹复制到游戏目录
+2. 确保游戏的 index.html、Build/、GameContainerData/ 存在
+3. 双击 index.html 启动游戏
+
+游戏标题：${modData.title}
+游戏描述：${modData.description}
+创建时间：${new Date().toLocaleString()}`;
+
+                zip.file("ERROR_README.txt", errorText);
+                
+                // 添加 MOD 数据
+                const modZip = await JSZip.loadAsync(modData.zipBlob);
+                for (const [relativePath, zipEntry] of Object.entries(modZip.files)) {
+                    if (!zipEntry.dir) {
+                        const content = await zipEntry.async('blob');
+                        zip.file(relativePath, content);
+                    }
+                }
+                
+                const fallbackZipBlob = await zip.generateAsync({type: "blob"});
+                
+                return {
+                    title: modData.title,
+                    description: modData.description,
+                    zipBlob: fallbackZipBlob,
+                };
+            }
+        }
+
+        /**
+         * 根据打包规则获取游戏文件
+         * 
+         * 功能说明：
+         * 1. 从 packing_rule.json 中的 'game_files' 域获取文件列表
+         * 2. 返回文件路径和内容的数组
+         * 
+         * @param {string[]} gamePatterns - 游戏文件的正则表达式模式（未使用，保留接口兼容性）
+         * @returns {Promise<Array<{path: string, content: Blob}>>} 游戏文件数组
+         */
+        async function fetchGameFiles(gamePatterns) {
+            const gameFiles = [];
+            
+            // 从 packing_rule.json 中的 game_files 域获取文件列表
+            if (packingRuleManager.rules && packingRuleManager.rules.game_files) {
+                console.log('使用 packing_rule.json 中的 game_files 域获取游戏文件');
+                const gameFilesInfo = packingRuleManager.rules.game_files;
+                
+                if (gameFilesInfo.files && Array.isArray(gameFilesInfo.files)) {
+                    console.log(`找到 ${gameFilesInfo.files.length} 个游戏文件 (扫描时间: ${gameFilesInfo.scan_time})`);
+                    
+                    for (const relativePath of gameFilesInfo.files) {
+                        try {
+                            // 文件路径相对于当前运行的 editor.html (在build目录下)
+                            const filePath = `./${relativePath}`;
+                            console.log(`正在获取游戏文件: ${filePath}`);
+                            const response = await fetch(filePath);
+                            
+                            if (response.ok) {
+                                const content = await response.blob();
+                                gameFiles.push({
+                                    path: relativePath,
+                                    content: content
+                                });
+                                console.log(`成功获取游戏文件: ${relativePath}`);
+                            } else {
+                                console.warn(`无法获取游戏文件: ${filePath} (状态: ${response.status})`);
+                            }
+                        } catch (error) {
+                            console.error(`获取游戏文件失败: ${relativePath}`, error);
+                        }
+                    }
+                    
+                    console.log(`从 game_files 域获取到 ${gameFiles.length} 个游戏文件`);
+                } else {
+                    console.warn('game_files 域存在但文件列表为空或格式不正确');
+                }
+            } else {
+                console.error('packing_rule.json 中未找到 game_files 域');
+                console.error('请确保运行了构建脚本以生成 game_files 域');
+                throw new Error('Missing game_files domain in packing_rule.json. Please run build script first.');
+            }
+            
+            console.log(`总共获取到 ${gameFiles.length} 个游戏文件`);
+            return gameFiles;
+        }
+
+
+
+        /**
+         * 导出配置
+         * 
+         * 【用户下载完整游戏包】
+         * 
+         * 功能说明：
+         * 1. 调用 getCompleteGameData() 获取完整游戏包（游戏文件 + MOD）
+         * 2. 触发浏览器下载ZIP文件
+         * 3. 用户下载后解压即可本地游玩
+         * 4. 处理导出过程中的UI状态和错误
+         * 
+         * 用户体验：
+         * - 点击"导出配置"按钮时调用
+         * - 导出过程中按钮显示"导出中..."并禁用
+         * - 下载包含游戏本体 + 用户MOD内容的完整包
+         * - 成功后恢复按钮状态
+         * 
+         * 文件命名规则：
+         * - 下载文件名格式："{游戏标题}-complete.zip"
+         * - 如果游戏标题为空，则使用 "game-complete.zip"
+         * 
+         * 注意事项：
+         * - 与 publishLocalEdit 不同，此函数下载完整游戏包
+         * - 包含 README.txt 说明文件指导用户使用
+         * - 依赖DOM元素：#exportBtn（导出按钮）
+         */
+        async function exportLocalEdit() {
+            try {
+                const btn = document.getElementById('exportBtn');
+                btn.disabled = true;
+                btn.textContent = '导出中...';
+                
+                const data = await getCompleteGameData();
+                
+                const url = URL.createObjectURL(data.zipBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${data.title || 'game'}-complete.zip`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                btn.disabled = false;
+                btn.textContent = '导出配置';
+                
+            } catch (error) {
+                console.error('导出失败:', error);
+                alert('导出失败: ' + error.message);
+                
+                const btn = document.getElementById('exportBtn');
+                btn.disabled = false;
+                btn.textContent = '导出配置';
+            }
+        }
+
+        /**
+         * 发布同款
+         * 
+         * 【核心接口函数 - 后端对接用】
+         * 
+         * 功能说明：
+         * 1. 调用 getLocalEditData() 获取用户编辑的数据
+         * 2. 通过 postMessage 与父页面通信，发送发布请求
+         * 3. 监听父页面返回的发布结果
+         * 4. 处理发布过程中的UI状态和用户反馈
+         * 
+         * 通信协议：
+         * 发送给父页面：
+         * {
+         *   type: 'gamePublish',
+         *   title: string,        // 游戏标题
+         *   description: string,  // 游戏描述
+         *   zipBlob: Blob        // MOD数据的ZIP包
+         * }
+         * 
+         * 接收父页面返回：
+         * {
+         *   type: 'publishResult',
+         *   success: boolean,     // 发布是否成功
+         *   error?: string,       // 错误信息（失败时）
+         *   redirectUrl?: string  // 重定向URL（成功时）
+         * }
+         * 
+         * 用户体验：
+         * - 点击"发布同款"按钮时调用
+         * - 发布过程中按钮显示"发布中..."并禁用
+         * - 成功后更新游戏状态为已发布，可选择跳转到结果页面
+         * - 失败时显示错误信息并恢复按钮状态
+         * - 30秒超时保护
+         * 
+         * 注意事项：
+         * - 此函数用于iframe嵌入场景，与父页面通信
+         * - 依赖DOM元素：#publishBtn（发布按钮）
+         * - 会更新全局状态：window.gameData.status
+         * - 监听消息时有超时机制，避免内存泄漏
+         */
+        async function publishLocalEdit() {
+            try {
+                const btn = document.getElementById('publishBtn');
+                btn.disabled = true;
+                btn.textContent = '发布中...';
+                
+                const publishData = await getLocalEditData();
+
+                window.parent.postMessage({
+                    type: 'gamePublish',
+                    title: publishData.title,
+                    description: publishData.description,
+                    zipBlob: publishData.zipBlob
+                }, '*');
+                
+                const messageHandler = (event) => {
+                    const data = event.data;
+                    if (data.type === 'publishResult') {
+                        window.removeEventListener('message', messageHandler);
+                        btn.disabled = false;
+                        btn.textContent = '发布同款';
+                        
+                        if (data.success) {
+                            alert('发布成功!');
+                            window.gameData.status = 'PUBLISHED';
+                            // 更新状态显示（如果有的话）
+                            if (typeof updateStatusDisplay === 'function') {
+                                updateStatusDisplay();
+                            }
+                            
+                            if (data.redirectUrl) {
+                                window.location.href = data.redirectUrl;
+                            }
+                        } else {
+                            alert('发布失败: ' + (data.error || '未知错误'));
+                        }
+                    }
+                };
+                window.addEventListener('message', messageHandler);
+                
+                // 30秒超时保护
+                setTimeout(() => {
+                    window.removeEventListener('message', messageHandler);
+                    btn.disabled = false;
+                    btn.textContent = '发布同款';
+                }, 30000);
+                
+            } catch (error) {
+                console.error('发布失败:', error);
+                alert('发布失败: ' + error.message);
+                
+                const btn = document.getElementById('publishBtn');
+                btn.disabled = false;
+                btn.textContent = '发布同款';
+            }
+        }
+
+        /**
+         * 监听来自父页面的消息
+         * 支持外部触发发布功能
+         */
+        window.addEventListener('message', function(event) {
+            const data = event.data;
+            if (data && data.type === 'requestSave') {
+                publishLocalEdit();
+            }
+        });
+
+        /* ========================================================================
+         * 辅助函数
+         * ========================================================================
+         */
+
+        /**
+         * 将图片转换为PNG格式
+         * 用于确保所有敌人头像都是PNG格式，便于游戏引擎处理
+         */
+        function convertImageToPng(file) {
+            return new Promise((resolve) => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const img = new Image();
+                
+                img.onload = function() {
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+                    canvas.toBlob(resolve, 'image/png');
+                };
+                
+                img.src = URL.createObjectURL(file);
+            });
+        }
+
+        /* ========================================================================
+         * 以下函数已迁移到 editorResource/ 模块中，由前端团队维护
+         * ========================================================================
+         * - 页面初始化：editor_main.js
+         * - 文件上传处理：editor_main.js  
+         * - localStorage管理：localStorage_manager.js
+         * - AI数据生成：ai_integration.js
+         * - 测试下载功能：game_test_manager.js
+         */
+    </script>
+</body>
+</html> 

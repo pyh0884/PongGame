@@ -1,0 +1,24 @@
+{
+  "spawnEvents": [
+    { "timestamp": 2.5, "spawnPosIndex": 0, "enemyType": 0 },
+    { "timestamp": 3.1, "spawnPosIndex": 1, "enemyType": 0 },
+    { "timestamp": 5.2, "spawnPosIndex": 0, "enemyType": 1 },
+    { "timestamp": 8.7, "spawnPosIndex": 1, "enemyType": 0 },
+    { "timestamp": 10.1, "spawnPosIndex": 0, "enemyType": 2 },
+    { "timestamp": 12.3, "spawnPosIndex": 1, "enemyType": 1 },
+    { "timestamp": 15.8, "spawnPosIndex": 0, "enemyType": 0 },
+    { "timestamp": 16.4, "spawnPosIndex": 1, "enemyType": 3 },
+    { "timestamp": 18.2, "spawnPosIndex": 0, "enemyType": 1 },
+    { "timestamp": 20.6, "spawnPosIndex": 1, "enemyType": 2 },
+    { "timestamp": 22.9, "spawnPosIndex": 0, "enemyType": 0 },
+    { "timestamp": 24.1, "spawnPosIndex": 1, "enemyType": 1 },
+    { "timestamp": 27.5, "spawnPosIndex": 0, "enemyType": 3 },
+    { "timestamp": 28.3, "spawnPosIndex": 1, "enemyType": 0 },
+    { "timestamp": 30.7, "spawnPosIndex": 0, "enemyType": 2 },
+    { "timestamp": 33.5, "spawnPosIndex": 1, "enemyType": 1 },
+    { "timestamp": 35.4, "spawnPosIndex": 0, "enemyType": 0 },
+    { "timestamp": 38.9, "spawnPosIndex": 1, "enemyType": 3 },
+    { "timestamp": 40.2, "spawnPosIndex": 0, "enemyType": 2 },
+    { "timestamp": 42.8, "spawnPosIndex": 1, "enemyType": 1 }
+  ]
+} 

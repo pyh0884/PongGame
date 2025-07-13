@@ -1,0 +1,150 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5069263792081179949
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5069263792081179939}
+  - component: {fileID: 2539873072151740899}
+  m_Layer: 0
+  m_Name: AudioManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5069263792081179939
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5069263792081179949}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2539873072151740899
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5069263792081179949}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 430d3e15a4fc887479879033b2144873, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audios:
+  - name: Click
+    clip: {fileID: 8300000, guid: cdc9f5f33b80746479e8791e7eda2593, type: 3}
+    volume: 0.15
+    pitch: 1
+    loop: 0
+    source: {fileID: 0}
+    mute: 0
+    mixer: {fileID: 24300002, guid: 919e4d4aa5052da4dbba6d59446019cd, type: 2}
+  - name: Highlight
+    clip: {fileID: 8300000, guid: b19a666c54622304181cbc8cc2e9d2f7, type: 3}
+    volume: 0.15
+    pitch: 1
+    loop: 0
+    source: {fileID: 0}
+    mute: 0
+    mixer: {fileID: 24300002, guid: 919e4d4aa5052da4dbba6d59446019cd, type: 2}
+  - name: Main Theme
+    clip: {fileID: 8300000, guid: 617712fab5f997d4cb8dfe9f380b0ef8, type: 3}
+    volume: 0.12
+    pitch: 1
+    loop: 1
+    source: {fileID: 0}
+    mute: 0
+    mixer: {fileID: 24300002, guid: 919e4d4aa5052da4dbba6d59446019cd, type: 2}
+  - name: Menu Open
+    clip: {fileID: 8300000, guid: 460d367eb2441da4c9ab6cc2f18adfd3, type: 3}
+    volume: 0.15
+    pitch: 1
+    loop: 0
+    source: {fileID: 0}
+    mute: 0
+    mixer: {fileID: 24300002, guid: 919e4d4aa5052da4dbba6d59446019cd, type: 2}
+  - name: Menu Close
+    clip: {fileID: 8300000, guid: 3cb44244c1c5ee04cb4ca588af780670, type: 3}
+    volume: 0.15
+    pitch: 1
+    loop: 0
+    source: {fileID: 0}
+    mute: 0
+    mixer: {fileID: 24300002, guid: 919e4d4aa5052da4dbba6d59446019cd, type: 2}
+  - name: Highlight Select
+    clip: {fileID: 8300000, guid: 7385b22b082f6eb4ebb844cf8e23adf3, type: 3}
+    volume: 0.15
+    pitch: 1
+    loop: 0
+    source: {fileID: 0}
+    mute: 0
+    mixer: {fileID: 24300002, guid: 919e4d4aa5052da4dbba6d59446019cd, type: 2}
+  - name: Building Lock
+    clip: {fileID: 8300000, guid: 57c0db891f454e445a55adfd5278846f, type: 3}
+    volume: 0.15
+    pitch: 1
+    loop: 0
+    source: {fileID: 0}
+    mute: 0
+    mixer: {fileID: 24300002, guid: 919e4d4aa5052da4dbba6d59446019cd, type: 2}
+  - name: Regular Block Break
+    clip: {fileID: 8300000, guid: 25134ca146fef814fbfe8c1c425071f9, type: 3}
+    volume: 0.15
+    pitch: 1
+    loop: 0
+    source: {fileID: 0}
+    mute: 0
+    mixer: {fileID: 24300002, guid: 919e4d4aa5052da4dbba6d59446019cd, type: 2}
+  - name: Explosion
+    clip: {fileID: 8300000, guid: 76567e45df8ead64cb6e3e504d0fa923, type: 3}
+    volume: 0.15
+    pitch: 1
+    loop: 0
+    source: {fileID: 0}
+    mute: 0
+    mixer: {fileID: 24300002, guid: 919e4d4aa5052da4dbba6d59446019cd, type: 2}
+  - name: Regular Block Break2
+    clip: {fileID: 8300000, guid: 6f80bc4aa018df547a317e10706a605d, type: 3}
+    volume: 0.15
+    pitch: 1
+    loop: 0
+    source: {fileID: 0}
+    mute: 0
+    mixer: {fileID: 24300002, guid: 919e4d4aa5052da4dbba6d59446019cd, type: 2}
+  - name: Unbreakable Hit
+    clip: {fileID: 8300000, guid: cf7282272ab33964b8ba9f36a4be1a2f, type: 3}
+    volume: 0.15
+    pitch: 1
+    loop: 0
+    source: {fileID: 0}
+    mute: 0
+    mixer: {fileID: 24300002, guid: 919e4d4aa5052da4dbba6d59446019cd, type: 2}
+  - name: Hit Wall
+    clip: {fileID: 8300000, guid: e7e5caf128fec924eb2b6f229691df89, type: 3}
+    volume: 0.15
+    pitch: 1
+    loop: 0
+    source: {fileID: 0}
+    mute: 0
+    mixer: {fileID: 24300002, guid: 919e4d4aa5052da4dbba6d59446019cd, type: 2}
+  - name: Winning BGM
+    clip: {fileID: 8300000, guid: 2b122c2c89f52d1499fe224a90222a04, type: 3}
+    volume: 0.15
+    pitch: 1
+    loop: 0
+    source: {fileID: 0}
+    mute: 0
+    mixer: {fileID: 24300002, guid: 919e4d4aa5052da4dbba6d59446019cd, type: 2}
